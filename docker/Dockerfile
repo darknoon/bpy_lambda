@@ -9,12 +9,12 @@ RUN yum install gcc-c++ \
     freetype-devel libogg-devel libjpeg-devel openjpeg openjpeg-devel \
     libpng-devel vim libGLU-devel wget -y
 
-# Install Python3.6
+# Install Python3.7
 ENV LD_LIBRARY_PATH /usr/local/lib
 RUN cd ~ && \
-    wget https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tgz && \
-    tar xzf Python-3.6.6.tgz && \
-    cd Python-3.6.6 && \
+    wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz && \
+    tar xzf Python-3.7.0.tgz && \
+    cd Python-3.7.0 && \
     ./configure --enable-shared && \
     make install && \
     ldconfig && python3 --version
@@ -60,8 +60,8 @@ ENV BOOST_ROOT ~/src/blender-deps/boost-1.60.0
 RUN mkdir ~/blender-git/blender_build && \
     cd ~/blender-git/blender_build && \
     cmake ../blender \
-    -DPYTHON_INCLUDE_DIR=/usr/local/include/python3.6m  \
-    -DPYTHON_LIBRARY=/usr/local/lib/libpython3.6m.so \
+    -DPYTHON_INCLUDE_DIR=/usr/local/include/python3.7m  \
+    -DPYTHON_LIBRARY=/usr/local/lib/libpython3.7m.so \
     -DPYTHON_LIBPATH=/usr/local/lib \
     -DWITH_INTERNATIONAL=OFF \
     -DWITH_CYCLES=ON \
@@ -114,7 +114,7 @@ RUN mkdir /bpy_lambda && \
     cp -L /opt/lib/boost-1.60.0/lib/libboost_regex.so.1.60.0 . && \
     cp -L /opt/lib/boost/lib/libboost_system.so.1.60.0 . && \
     cp -L /opt/lib/boost/lib/libboost_thread.so.1.60.0 . && \
-    cp -L /usr/local/lib/libpython3.6m.so.1.0 . && \
+    cp -L /usr/local/lib/libpython3.7m.so.1.0 . && \
     cp -L /usr/lib64/libGLU.so.1 .
 
 # Build artifact stored in /bpy_lambda
