@@ -29,7 +29,7 @@ RUN mkdir ~/blender-git && \
     cd ~/blender-git && \
     git clone --progress --no-checkout https://git.blender.org/blender.git && \
     cd blender && \
-    git checkout tags/v2.79 && \
+    git checkout master && \
     git submodule update --init --recursive && \
     git submodule foreach git checkout master && \
     git submodule foreach git pull --rebase origin master
@@ -101,7 +101,7 @@ RUN cd ~/blender-git/blender_build && \
 
 RUN mkdir /bpy_lambda && \
     cd /bpy_lambda && \
-    cp -R ~/blender-git/blender_build/bin/2.79 . && \
+    cp -R ~/blender-git/blender_build/bin/2.80 . && \
     cp -R ~/blender-git/blender_build/bin/bpy.so . && \
     cp -L /opt/lib/openexr-2.2.0/lib/libHalf.so.12 . && \
     cp -L /opt/lib/openexr-2.2.0/lib/libIex.so.12 . && \
