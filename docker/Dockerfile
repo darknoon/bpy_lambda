@@ -1,13 +1,23 @@
 # Docker file for building Blender as a Python module for AWS Lambda
 # Compiles to ~/blender-git/blender_build/bin
 FROM amazonlinux:2017.03
-RUN yum install git cmake -y
+RUN yum install git -y
 RUN yum groupinstall 'Development Tools' -y
 
 RUN yum install gcc-c++ \
     libXi-devel openexr-devel SDL-devel fftw-devel libtiff-devel \
     freetype-devel libogg-devel libjpeg-devel openjpeg openjpeg-devel \
-    libpng-devel vim libGLU-devel wget -y
+    libpng-devel vim libGLU-devel wget tar gzip -y
+
+# We need a newer cmake
+RUN wget https://cmake.org/files/v3.10/cmake-3.10.0.tar.gz && \
+    tar -xvzf cmake-3.10.0.tar.gz && \
+    cd cmake-3.10.0 && \
+    ./bootstrap && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf cmake*
 
 # Install Python3.7
 ENV LD_LIBRARY_PATH /usr/local/lib
