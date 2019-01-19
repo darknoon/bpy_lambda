@@ -19,7 +19,10 @@ RUN wget https://cmake.org/files/v3.10/cmake-3.10.0.tar.gz && \
     cd .. && \
     rm -rf cmake*
 
-# Install Python3.7
+# ffi required now
+RUN yum install libffi-devel -y
+
+# Build Python3.7 from source
 ENV LD_LIBRARY_PATH /usr/local/lib
 RUN cd ~ && \
     wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz && \
@@ -44,6 +47,15 @@ RUN mkdir ~/blender-git && \
     git submodule foreach git checkout master && \
     git submodule foreach git pull --rebase origin master
 
+ENV PYTHON_INCLUDE_DIR /usr/local/include/python3.7m
+ENV PYTHON_LIBRARY /usr/local/lib/libpython3.7m.so
+ENV PYTHON_LIBPATH /usr/local/lib
+
+# Maintainer's note: calculate DPYTHON_INCLUDE_DIR with the following command:
+# ```
+# python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())"
+# ```
+
 RUN ~/blender-git/blender/build_files/build_environment/install_deps.sh \
     --no-sudo \
     --no-confirm \
@@ -63,16 +75,9 @@ RUN ~/blender-git/blender/build_files/build_environment/install_deps.sh \
 
 ENV BOOST_ROOT ~/src/blender-deps/boost-1.60.0
 
-# Maintainer's note: calculate DPYTHON_INCLUDE_DIR with the following command:
-# ```
-# python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())"
-# ```
 RUN mkdir ~/blender-git/blender_build && \
     cd ~/blender-git/blender_build && \
     cmake ../blender \
-    -DPYTHON_INCLUDE_DIR=/usr/local/include/python3.7m  \
-    -DPYTHON_LIBRARY=/usr/local/lib/libpython3.7m.so \
-    -DPYTHON_LIBPATH=/usr/local/lib \
     -DWITH_INTERNATIONAL=OFF \
     -DWITH_CYCLES=ON \
     -DWITH_AUDASPACE=OFF \
