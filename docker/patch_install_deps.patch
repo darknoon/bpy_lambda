@@ -1,0 +1,20 @@
+diff --git a/build_files/build_environment/install_deps.sh b/build_files/build_environment/install_deps.sh
+index b480f4a9c4e..2c2d3268444 100755
+--- a/build_files/build_environment/install_deps.sh
++++ b/build_files/build_environment/install_deps.sh
+@@ -1463,6 +1463,7 @@ compile_ILMBASE() {
+     cd build
+ 
+     cmake_d="-D CMAKE_BUILD_TYPE=Release"
++    cmake_d="$cmake_d -D OPENEXR_BUILD_PYTHON_LIBS=0"
+     cmake_d="$cmake_d -D CMAKE_PREFIX_PATH=$_inst"
+     cmake_d="$cmake_d -D CMAKE_INSTALL_PREFIX=$_inst"
+     cmake_d="$cmake_d -D BUILD_SHARED_LIBS=ON"
+@@ -1574,6 +1575,7 @@ compile_OPENEXR() {
+     cd build
+ 
+     cmake_d="-D CMAKE_BUILD_TYPE=Release"
++    cmake_d="$cmake_d -D OPENEXR_BUILD_PYTHON_LIBS=0"
+     cmake_d="$cmake_d -D CMAKE_PREFIX_PATH=$_inst"
+     cmake_d="$cmake_d -D CMAKE_INSTALL_PREFIX=$_inst"
+     cmake_d="$cmake_d -D ILMBASE_PACKAGE_PREFIX=$_ilmbase_inst"

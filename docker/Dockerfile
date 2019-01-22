@@ -4,7 +4,7 @@ FROM amazonlinux:2017.03
 RUN yum install git -y
 RUN yum groupinstall 'Development Tools' -y
 
-RUN yum install gcc-c++ \
+RUN yum install clang \
     libXi-devel openexr-devel SDL-devel fftw-devel libtiff-devel \
     freetype-devel libogg-devel libjpeg-devel openjpeg openjpeg-devel \
     libpng-devel vim libGLU-devel wget tar gzip -y
@@ -17,6 +17,9 @@ RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
 
 # ffi required now
 RUN yum install libffi-devel -y
+
+ENV CC /usr/bin/clang
+ENV CXX /usr/bin/clang++
 
 # Build Python3.7 from source
 ENV LD_LIBRARY_PATH /usr/local/lib
@@ -38,23 +41,54 @@ RUN mkdir ~/blender-git && \
     cd ~/blender-git && \
     git clone --progress --depth=1 https://git.blender.org/blender.git && \
     cd blender && \
-    git submodule update --init --recursive && \
-    git submodule foreach git checkout master && \
-    git submodule foreach git pull --rebase origin master
+    git submodule update --init --recursive
+    
+    #  && \
+    # git submodule foreach git checkout master && \
+    # git submodule foreach git pull --rebase origin master
 
 ENV PYTHON_INCLUDE_DIR /usr/local/include/python3.7m
 ENV PYTHON_LIBRARY /usr/local/lib/libpython3.7m.so
 ENV PYTHON_LIBPATH /usr/local/lib
+
+
+# Get boost inside our docker layer. When debugging is done, we can consolidate it back with the other install_deps command
+RUN ~/blender-git/blender/build_files/build_environment/install_deps.sh \
+    --no-sudo \
+    --no-confirm \
+    --build-boost \
+    --skip-openexr \
+    --skip-oiio \
+    --skip-python \
+    --skip-numpy \
+    --skip-ocio \
+    --skip-osl \
+    --skip-osd \
+    --skip-openvdb \
+    --skip-llvm \
+    --skip-alembic \
+    --skip-opencollada \
+    --skip-ffmpeg
+
+ENV BOOST_ROOT ~/src/blender-deps/boost-1.68.0
 
 # Maintainer's note: calculate DPYTHON_INCLUDE_DIR with the following command:
 # ```
 # python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())"
 # ```
 
+COPY patch_install_deps.patch /root
+
+RUN cd ~/blender-git/blender && \
+    git apply ~/patch_install_deps.patch
+
+ENV OPENEXR_PYTHON_MAJOR 3
+ENV OPENEXR_PYTHON_MINOR 7
+
 RUN ~/blender-git/blender/build_files/build_environment/install_deps.sh \
     --no-sudo \
     --no-confirm \
-    --build-boost \
+    --skip-boost \
     --build-openexr \
     --build-oiio \
     --skip-python \
@@ -68,7 +102,6 @@ RUN ~/blender-git/blender/build_files/build_environment/install_deps.sh \
     --skip-opencollada \
     --skip-ffmpeg
 
-ENV BOOST_ROOT ~/src/blender-deps/boost-1.60.0
 
 RUN mkdir ~/blender-git/blender_build && \
     cd ~/blender-git/blender_build && \
