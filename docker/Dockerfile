@@ -9,15 +9,11 @@ RUN yum install gcc-c++ \
     freetype-devel libogg-devel libjpeg-devel openjpeg openjpeg-devel \
     libpng-devel vim libGLU-devel wget tar gzip -y
 
+RUN yum install python27 -y
+
 # We need a newer cmake
-RUN wget https://cmake.org/files/v3.10/cmake-3.10.0.tar.gz && \
-    tar -xvzf cmake-3.10.0.tar.gz && \
-    cd cmake-3.10.0 && \
-    ./bootstrap && \
-    make && \
-    make install && \
-    cd .. && \
-    rm -rf cmake*
+RUN yum install cmake3 -y
+RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
 
 # ffi required now
 RUN yum install libffi-devel -y
@@ -40,9 +36,8 @@ RUN git clone https://github.com/nigels-com/glew ~/glew && \
 
 RUN mkdir ~/blender-git && \
     cd ~/blender-git && \
-    git clone --progress --no-checkout https://git.blender.org/blender.git && \
+    git clone --progress --depth=1 https://git.blender.org/blender.git && \
     cd blender && \
-    git checkout master && \
     git submodule update --init --recursive && \
     git submodule foreach git checkout master && \
     git submodule foreach git pull --rebase origin master
